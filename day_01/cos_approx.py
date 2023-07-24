@@ -3,19 +3,20 @@
 
 cosine approximation function
 """
-__author__ = 'Qusai Al Shidi'
-__email__ = 'qusai@umich.edu'
+__author__ = 'Nitya Agarwala'
+__email__ = 'nityaagarwala@yahoo.in'
 
 from math import factorial
 from math import pi
 
 
 def cos_approx(x, accuracy=10):
+    """ Returns an approximate cosine using Taylor series
     """
-    """
-    return 
-
-
+    n = [((-1)**n)/(factorial(2*n))*(x**(2*n)) for n in range(accuracy)]
+    
+    s = sum(n)
+    return s
 
 # Will only run if this is run from command line as opposed to imported
 if __name__ == '__main__':  # main code block
@@ -23,3 +24,7 @@ if __name__ == '__main__':  # main code block
     print("cos(pi) = ", cos_approx(pi))
     print("cos(2*pi) = ", cos_approx(2*pi))
     print("more accurate cos(2*pi) = ", cos_approx(2*pi, accuracy=50))
+    
+    
+
+    
