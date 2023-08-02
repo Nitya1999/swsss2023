@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from tridiagonal import solve_tridiagonal
-#from hydrostatic import scale_height
+from hydrostatic import scale_height,density_species
 
 # ----------------------------------------------------------------------
 # Main code
@@ -41,7 +41,7 @@ if __name__ == "__main__":
         return factorial
     
     #getting the plot for 3 days
-    ndays = 27
+    ndays = 3
     dt = 1
     times = np.arange(0,ndays*24,dt)
     #plt.plot(time, [fac(i) for i in time]) , this will plot how of time dependence looks as a plot
@@ -49,9 +49,9 @@ if __name__ == "__main__":
     
     #creating a 2D array for storing temperature values
     temp2d = np.zeros((len(times),nPts))
-    
-    #creating the empty plot
-    fig,axs = plt.subplots(1, figsize=(10,10), sharex=True)
+    dens2dN2 = np.zeros((len(times),nPts))
+    dens2dO2 = np.zeros((len(times),nPts))
+    dens2dO = np.zeros((len(times),nPts))
  
     lon = 0.0 #defining longitutde
     f107 = 100 + (50/(24*365)*times) + 25*np.sin((times/27*24)*2*np.pi)
@@ -61,6 +61,14 @@ if __name__ == "__main__":
     ampSd = 25 #semi-diurnal amplitude, because tides occur twice a day
     phaseDi = np.pi/2 #phase of the amp
     phaseSd = 3*np.pi/2 #phase of the amp, slightly dephase it from diurnal. 
+    
+    n_0_N2 = 1.e19
+    n_0_O2 = 0.3*10e19
+    n_0_O = 1*10e18
+    m_N2 =28*1.67e-27
+    m_O2 = 32*1.67e-27
+    m_O =16*1.67e-27
+    
  
     for i,hour in enumerate(times):
         
@@ -97,18 +105,42 @@ if __name__ == "__main__":
     
         # plot:
         temp2d[i] = t
+        dens2dN2[i] = density_species(m_N2,n_0_N2,t,x)
+        dens2dO2[i] = density_species(m_O2,n_0_O2,t,x)
+        dens2dO[i] = density_species(m_O,n_0_O,t,x)
+        
        
-    #plotting and saving the contour plot file
+    #plotting and saving the temperature contour plot 
     plotfile = 'conduction_v1.png'
     print('writing : ',plotfile)
     [times2d,alts2d] = np.meshgrid(times,x) #getting a 2D array for times and altitude using meshgrid function
-    cs = axs.contourf(times2d,alts2d,temp2d.T) #creating the contour plot
+    fig,axs = plt.subplots(nrows=2,ncols=2, figsize=(10,10), sharex=True, sharey=True)
+    
+    cs = axs[0,0].contourf(times2d,alts2d,temp2d.T)
+    axs[0,0].set_title('Time-tependent temperature variation in the thermosphere', fontsize=18)
+    axs[0,0].set_ylabel('altitude(km)', fontsize=16)  
+    cbar = fig.colorbar(cs)
+    cbar.set_label('temperature', rotation=270, fontsize=18)
+    
+    cs = axs[1,0].contourf(times2d,alts2d,np.log(dens2dN2.T)) #creating the contour plot
     cbar = fig.colorbar(cs) #getting the colourbar
-    cbar.set_label('temperature', rotation=270, fontsize=18) #labeling colourbar axes
-    plt.xlabel('time', fontsize=18) #labeling axes
-    plt.ylabel('altitude in km', fontsize=18) #labeling axes
-    plt.title('Time-tependent temperature variation in the thermosphere', fontsize=18)
+    axs[1,0].set_ylabel('altitude(km)', fontsize=16)
+    cbar.set_label('density N2', rotation=270, fontsize=18)
+    
+    cs = axs[0,1].contourf(times2d,alts2d,np.log(dens2dO2.T)) #creating the contour plot
+    cbar = fig.colorbar(cs) #getting the colourbar
+    axs[0,1].set_ylabel('altitude(km)', fontsize=16)
+    cbar.set_label('density O2', rotation=270, fontsize=18)
+    
+    cs = axs[1,1].contourf(times2d,alts2d,np.log(dens2dO.T)) #creating the contour plot
+    axs[1,1].set_ylabel('altitude(km)', fontsize=16)
+    axs[1,1].set_xlabel("Time", fontsize=18)  
+    cbar = fig.colorbar(cs) #getting the colourbar
+    cbar.set_label('density O', rotation=270, fontsize=18)
+    
     fig.savefig(plotfile)
+    
+    
     plt.show()
     plt.close()
     

@@ -51,4 +51,20 @@ if __name__ == '__main__':
     plt.ylabel('Density [N2] [$m^{-3}$]')
     plt.show()
     
-   
+    m = m_O2
+    n = n_0_O2
+    dens = density_species(m, n, temp, alt)
+
+    plt.plot(alt, np.log(dens))
+    plt.xlabel('Altitude [km]')
+    plt.ylabel('Density [O2] [$m^{-3}$]')
+    plt.show()
+    
+    m = m_O2
+    n = n_0_O2
+    dens = density_species(m, n, temp, alt)
+
+    plt.plot(alt, np.log(dens))
+    plt.xlabel('Altitude [km]')
+    plt.ylabel('Density [O2] [$m^{-3}$]')
+    plt.show()
