@@ -12,7 +12,26 @@ import runge_kutta as rk
 #    k - numpy array carrying the rate coefficients k1 = 100, k2=0.25, k3=1
 #    c_0 - initial composition, i.e., c_0(A) = 1, c_0(B)=c_0(C)=0.0
 
-def reaction_rates(c,k):
+S = np.array([[-1,0,0],
+             [1,-1,1],
+             [0,2,-2]])
+
+k1 = 100
+k2 = 0.25
+k3 = 1
+   
+k = np.array([k1,
+              k2,
+              k3])
+cA = 1
+cB = 0
+cC = 0
+
+c_0 = np.array([cA,
+                cB,
+                cC**2])
+
+def reaction_rates(c_0,k):
     """
         Function implementing the reaction rate computation of our toy reactor
         
@@ -23,9 +42,12 @@ def reaction_rates(c,k):
         outputs:
             reaction rates (numpy array)
     """
-    return ... # please complete this function
+ 
+    r = k*c_0   
+    
+    return r
 
-def reactor(c,t,k,S):
+def reactor(c_0,t,k,S):
     """
         Function returing the rhs of our toy reactor model 
         
@@ -38,7 +60,11 @@ def reactor(c,t,k,S):
         outputs: 
             dc/dt - numpy array
     """
-    return ... # please complete this function
+    r = reaction_rates(c_0,k)
+    RHS = np.matmul(S,r)
+    
+    return RHS 
+# + np.sin(t)**2 * np.array([1,0,0]) to show time dependence
 
 # Please play around with the step size to study the effect on the solution
 h = 1e-3

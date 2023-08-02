@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Aug  1 10:13:01 2023
+
+@author: nitya
+"""
+
+import numpy as np
 from numpy.linalg import norm
 
 def explicit_RK_stepper(f,x,t,h,a,b,c):
@@ -7,7 +15,7 @@ def explicit_RK_stepper(f,x,t,h,a,b,c):
         inputs:
             x - current state 
             t - current time
-            f - right-hand-side of the (explicit) ODE to be integrated
+            f - right-hand-side of the (explicit) ODE to be integrated (signature f(x,t))
             h - step size 
             a - coefficients of Runge-Kutta method (organized as list-of-list (or vector-of-vector))
             b - weights of Runge-Kutta method (list/vector)
@@ -16,14 +24,17 @@ def explicit_RK_stepper(f,x,t,h,a,b,c):
         outputs: 
             x_hat - estimate of the state at time t+h
     """
+
+    k = [f(x,t)]
     s = len(c)
-    ks = [f(x,t)]
-    x_hat = x + h*b[0]*ks[0]
+
     for i in range(s-1):
-        y = x + h*sum(a[i][j]*ks[j] for j in range(i+1))
-        ks.append(f(y, t+h*c[i+1]))
-        x_hat += h*b[i+1]*ks[-1]
+        x_tilde = x+h*sum(a[i][j]*k[j] for j in range(len(k)))
+        k.append(f(x_tilde, t + c[i+1]*h))
+     
+        x_hat = x + h*sum(b[i]*k[i] for i in range(len(k)))
     return x_hat
+
 
 def integrate(f, x0, tspan, h, step):
     """
